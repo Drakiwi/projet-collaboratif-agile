@@ -1,0 +1,24 @@
+{
+  "name": "projet-collaboratif-agile",
+  "version": "1.0.0",
+  "description": "Votre mission : créer l'application web officielle de la promo pour attribuer aléatoirement les places dans la salle chaque lundi matin.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Drakiwi/projet-collaboratif-agile.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Drakiwi/projet-collaboratif-agile/issues"
+  },
+  "homepage": "https://github.com/Drakiwi/projet-collaboratif-agile#readme",
+  "devDependencies": {
+    "tailwindcss": "^3.4.19"
+  }
+}
