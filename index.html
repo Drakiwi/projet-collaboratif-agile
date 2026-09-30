@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,3 +8,64 @@
 
     <link rel="stylesheet" href="./dist/output.css">
 </head>
+
+<body>
+    <header>
+        <div id="menuBar">
+            <button class="menuBtn">Définir la disposition</button>
+            <button class="menuBtn">Saisie des élèves</button>
+            <button class="menuBtn">Exporter</button>
+        </div>
+    </header>
+
+    <main>
+        <div id="planTotal"></div>
+    </main>
+
+    <footer>
+
+    </footer>
+</body>
+
+<div id="menuDisposition">
+    <h2>Menu de création de la disposition des places</h2>
+    <div>
+        <h3>Donnez le nombre de rangée(s) et de place(s) par rangée.</h3>
+        <div>
+            <label for="nb-range">Nombre de rangée(s): </label><input type="text" id="nb-range" required>
+
+            <label for="nb-place">Nombre de place(s): </label><input type="text" id="nb-place" required>
+        </div>
+        <button id="afficherAp">Afficher l'aperçu</button>
+    </div>
+    <h3>Aperçu</h3>
+    <div id="apercu"></div>
+    <button id="appPlanDisp">Appliquer au plan</button>
+</div>
+
+<div id="menuSaisie">
+    <h2>Menu de saisie des élèves</h2>
+    <div id="saisieInd">
+        <h3>Donnez le nombre d'élèves à placer.</h3>
+        <label for="nb-eleve">Nombre d'élèves: </label><input type="text" id="nb-eleve" required>
+        <p id="errInd"></p>
+        <button id="startSaisie">Commencer saisie</button>
+    </div>
+    <div id="SaisieMlt">
+        <h3>Saisie Multiple</h3>
+        <textarea placeholder="Entrer une liste de noms séparés par des virgules. ex: Louis, Mathys, Augustin..."></textarea>
+        <p id="errMlt"></p>
+    </div>
+    <button id="appPlanSaisie">Appliquer au plan</button>
+</div>
+
+<div id="export">
+    <h2>Menu export</h2>
+    <label for="format">Selectionner le format d'export</label>
+    <select id="format">
+        <option value="sS">Capture d'écran</option>
+        <option value="texte">Liste en texte</option>
+    </select>
+    <button id="exportBtn">Exporter</button>
+</div>
+</html>

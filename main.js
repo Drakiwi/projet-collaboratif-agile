@@ -1,6 +1,14 @@
 // Projet "Attribue ta place"
-// Écrit par Antoine (Lead Dev) le 30/09/2026
-// 1=gérer la salle   2=coller les élèves   3=tirer les places   4=sauvegarder
+
+// Ce qui est fait :
+// 1. dessiner la salle (nb-range rangées x nb-place places)
+// 2. marquer une place inutilisable en cliquant dessus
+// 3. couper la liste des élèves et la mélanger
+// 4. envoyer la salle dans le plan principal
+
+// Ce qu'il reste à faire :
+// 1. le bouton Exporter
+// 2. un message d'erreur si on a plus d'élèves que de places
 
 let room = { rows: 4, cols: 6, unavailable: [] };
 let students = [];
@@ -11,10 +19,9 @@ function render() {
 }
 
 function renderGrid() {
-  const grille = document.getElementById("seats-grid");
-  if (!grille) return;
-
-  grille.innerHTML = "";
+  const apercu = document.getElementById("apercu");
+  if (!apercu) return;
+  apercu.innerHTML = "";
 
   for (let r = 1; r <= room.rows; r++) {
     const ligne = document.createElement("div");
@@ -22,14 +29,12 @@ function renderGrid() {
 
     for (let c = 1; c <= room.cols; c++) {
       const id = "R" + r + "-C" + c;
-
       const place = document.createElement("div");
       place.className = "w-16 h-10 border rounded flex items-center justify-center text-xs";
       place.textContent = id;
 
       if (room.unavailable.includes(id)) {
         place.textContent = "X";
-        place.className = place.className + " bg-gray-200";
       }
 
       place.addEventListener("click", function () {
@@ -38,15 +43,22 @@ function renderGrid() {
 
       ligne.appendChild(place);
     }
-    grille.appendChild(ligne);
+    apercu.appendChild(ligne);
   }
 }
 
 function parseStudents(texte) {
-  return texte
-    .split("\n")
-    .map(function (nom) { return nom.trim(); })
-    .filter(function (nom) { return nom !== ""; });
+  const lignes = texte.split("\n");
+  const noms = [];
+
+  for (let i = 0; i < lignes.length; i++) {
+    const nom = lignes[i].trim();
+    if (nom !== "") {
+      noms.push(nom);
+    }
+  }
+
+  return noms;
 }
 
 function drawPlan() {
@@ -54,6 +66,7 @@ function drawPlan() {
   melanges.sort(function () { return Math.random() - 0.5; });
 
   plan = [];
+
   for (let i = 0; i < melanges.length; i++) {
     plan.push({ seat: "R" + (i + 1) + "-C1", name: melanges[i] });
   }
@@ -82,5 +95,29 @@ function save() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  render();
+  const btnApercu = document.getElementById("afficherAp");
+  const nbRange = document.getElementById("nb-range");
+  const nbPlace = document.getElementById("nb-place");
+
+  btnApercu.addEventListener("click", function () {
+    room.rows = Number(nbRange.value);
+    room.cols = Number(nbPlace.value);
+    render();
+  });
+
+  const btnAppliquer = document.getElementById("appPlanDisp");
+  const apercu = document.getElementById("apercu");
+  const planTotal = document.getElementById("planTotal");
+
+  btnAppliquer.addEventListener("click", function () {
+    planTotal.innerHTML = apercu.innerHTML;
+  });
+
+  const zone = document.querySelector("#SaisieMlt textarea");
+  const btnSaisie = document.getElementById("appPlanSaisie");
+
+  btnSaisie.addEventListener("click", function () {
+    students = parseStudents(zone.value);
+    drawPlan();
+  });
 });
