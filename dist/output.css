@@ -683,14 +683,12 @@ video {
   padding: 2rem;
 }
 
-.px-6 {
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
+.overflow-scroll {
+  overflow: scroll;
 }
 
-.py-3 {
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
+.rounded-xl {
+  border-radius: 0.75rem;
 }
 
 .py-4 {
@@ -698,9 +696,9 @@ video {
   padding-bottom: 1rem;
 }
 
-.text-lg {
-  font-size: 1.125rem;
-  line-height: 1.75rem;
+.border-black {
+  --tw-border-opacity: 1;
+  border-color: rgb(0 0 0 / var(--tw-border-opacity, 1));
 }
 
 .font-medium {
