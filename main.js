@@ -16,28 +16,6 @@ let room = { rows: 0, cols: 0, unavailable: [] };
 let students = [];
 let plan = [];
 
-//boutons du menu
-
-const menuDispositionBtn = document.getElementById('dispBtn');
-const menuEleveBtn = document.getElementById('eleveBtn');
-const menuExportBtn = document.getElementById('expBtn');
-
-const menuDisp = document.getElementById('menuDisposition');
-const menuSaisie = document.getElementById('menuSaisie');
-const menuExport = document.getElementById('export');
-
-menuDispositionBtn.addEventListener('click', () => {
-  menuDisp.classList.remove('hidden')
-})
-
-menuEleveBtn.addEventListener('click', () => {
-  menuSaisie.classList.remove('hidden')
-})
-
-menuExportBtn.addEventListener('click', () => {
-  menuExport.classList.remove('hidden')
-})
-
 function render() {                        // rafraîchir l'écran
   renderGrid();
 }
@@ -274,5 +252,4 @@ document.addEventListener("DOMContentLoaded", function () {   // au démarrage
   });
 
   render();
-  menuSaisie.classList.add('hidden');
 });
