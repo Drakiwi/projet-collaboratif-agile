@@ -149,22 +149,12 @@ function basculerMenu(menu) {              // ouvrir ou fermer un menu
   if (!estOuvert) {
     menu.classList.remove("hidden");
   }
-
-  placerMenu(menu);
 }
 
 function fermerMenus() {                  // fermer les 3 menus
   document.getElementById("menuDisposition").classList.add("hidden");
   document.getElementById("menuSaisie").classList.add("hidden");
   document.getElementById("export").classList.add("hidden");
-}
-
-// le menu se place sous la barre du haut, jamais par-dessus
-function placerMenu(menu) {               // mettre le menu tout en haut
-  if (!menu) return;
-  menu.style.top = "12%";
-  menu.style.left = "50%";
-  menu.style.transform = "translateX(-50%)";
 }
 
 function appliquerAuPlan() {               // copier l'aperçu dans le plan
@@ -243,7 +233,6 @@ document.addEventListener("DOMContentLoaded", function () {   // au démarrage
   // Appliquer au plan : on copie l'aperçu dans le plan principal
   document.getElementById("appPlanDisp").addEventListener("click", function () {
     appliquerAuPlan();
-    fermerMenus();
   });
 
   // Appliquer au plan (saisie) : on lit les élèves et on tire les places
@@ -260,7 +249,6 @@ document.addEventListener("DOMContentLoaded", function () {   // au démarrage
 
     drawPlan();
     appliquerAuPlan();
-    fermerMenus();
   });
 
   render();
