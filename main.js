@@ -173,22 +173,12 @@ function basculerMenu(menu) {              // ouvrir ou fermer un menu
   if (!estOuvert) {
     menu.classList.remove("hidden");
   }
-
-  placerMenu(menu);
 }
 
 function fermerMenus() {                  // fermer les 3 menus
   document.getElementById("menuDisposition").classList.add("hidden");
   document.getElementById("menuSaisie").classList.add("hidden");
   document.getElementById("export").classList.add("hidden");
-}
-
-// le menu se place sous la barre du haut, jamais par-dessus
-function placerMenu(menu) {               // mettre le menu tout en haut
-  if (!menu) return;
-  menu.style.top = "12%";
-  menu.style.left = "50%";
-  menu.style.transform = "translateX(-50%)";
 }
 
 function appliquerAuPlan() {               // copier l'aperçu dans le plan
