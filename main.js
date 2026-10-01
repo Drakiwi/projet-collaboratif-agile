@@ -165,20 +165,20 @@ function basculerMenu(menu) {              // ouvrir ou fermer un menu
   if (!menu) return;
 
   // on regarde s'il est déjà ouvert
-  const estOuvert = !menu.classList.contains("hidden");
+  const estOuvert = !menu.classList.contains("invisible");
 
   fermerMenus();
 
   // s'il était ouvert, on le laisse fermé, sinon on l'ouvre
   if (!estOuvert) {
-    menu.classList.remove("hidden");
+    menu.classList.remove("invisible");
   }
 }
 
 function fermerMenus() {                  // fermer les 3 menus
-  document.getElementById("menuDisposition").classList.add("hidden");
-  document.getElementById("menuSaisie").classList.add("hidden");
-  document.getElementById("export").classList.add("hidden");
+  document.getElementById("menuDisposition").classList.add("invisible");
+  document.getElementById("menuSaisie").classList.add("invisible");
+  document.getElementById("export").classList.add("invisible");
 }
 
 function appliquerAuPlan() {               // copier l'aperçu dans le plan
