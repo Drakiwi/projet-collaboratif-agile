@@ -166,6 +166,15 @@ document.addEventListener("DOMContentLoaded", function () {   // au démarrage
   nbPlace.value = "";
   planTotal.innerHTML = "";
 
+  //hover
+  planTotal.addEventListener('mouseenter', () =>{
+    planTotal.classList.toggle('bg-gray-200');
+  })
+
+  planTotal.addEventListener('mouseleave', () =>{
+    planTotal.classList.toggle('bg-gray-200');
+  })
+
   // Afficher l'aperçu : on change la taille de la salle
   document.getElementById("afficherAp").addEventListener("click", function () {
     const r = Number(nbRange.value);
