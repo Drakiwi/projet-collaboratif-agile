@@ -36,7 +36,7 @@ function renderGrid() {                    // dessiner la salle
   for (let r = 1; r <= room.rows; r++) {
     // une div par rangée, les places se mettent à côté
     const ligne = document.createElement("div");
-    ligne.className = "flex gap-2 mb-2 justify-center";
+    ligne.className = "flex gap-2 mb-2 justify-arround";
 
     for (let c = 1; c <= room.cols; c++) {
       const id = "R" + r + "-C" + c;
