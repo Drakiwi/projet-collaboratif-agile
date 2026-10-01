@@ -27,21 +27,25 @@ function renderGrid() {                    // dessiner la salle
   // si la salle est vide, on n'affiche rien
   if (room.rows === 0 || room.cols === 0) return;
 
-  // le bureau du formateur, tout en haut
+  // le bureau du formateur : taille fixe, jamais calculée
+  const bureauLigne = document.createElement("div");
+  bureauLigne.className = "flex gap-2 mb-2 justify-center shrink-0";
+
   const bureau = document.createElement("div");
-  bureau.className = "bg-yellow-200 border-2 border-black rounded p-1 text-center font-bold mb-2";
+  bureau.className = "w-40 h-16 shrink-0 bg-white border-2 border-black rounded flex items-center justify-center text-center text-sm font-bold";
   bureau.textContent = "Bureau formateur";
-  apercu.appendChild(bureau);
+  bureauLigne.appendChild(bureau);
+  apercu.appendChild(bureauLigne);
 
   for (let r = 1; r <= room.rows; r++) {
-    // une div par rangée, les places se mettent à côté
+    // une div par rangée, les places se mettent à côté et au centre
     const ligne = document.createElement("div");
-    ligne.className = "flex gap-2 mb-2 justify-arround";
+    ligne.className = "flex gap-2 mb-2 justify-center shrink-0";
 
     for (let c = 1; c <= room.cols; c++) {
       const id = "R" + r + "-C" + c;
       const place = document.createElement("div");
-      place.className = "w-20 h-14 border-2 border-black rounded flex items-center justify-center text-center text-xs p-1";
+      place.className = "w-20 h-14 shrink-0 border-2 border-black rounded flex items-center justify-center text-center text-xs p-1";
       place.textContent = id;
 
       // si la place est inutilisable, on la grise
