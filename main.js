@@ -216,6 +216,7 @@ document.addEventListener("DOMContentLoaded", function () {   // au démarrage
   // Appliquer au plan : on copie l'aperçu dans le plan principal
   document.getElementById("appPlanDisp").addEventListener("click", function () {
     planTotal.innerHTML = apercu.innerHTML;
+    menuDisp.classList.add('hidden');
   });
 
   // Appliquer au plan (saisie) : on lit les élèves et on tire les places
@@ -235,4 +236,5 @@ document.addEventListener("DOMContentLoaded", function () {   // au démarrage
   });
 
   render();
+  menuSaisie.classList.add('hidden');
 });
