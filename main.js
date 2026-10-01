@@ -15,6 +15,28 @@ let room = { rows: 0, cols: 0, unavailable: [] };
 let students = [];
 let plan = [];
 
+//boutons du menu
+
+const menuDispositionBtn = document.getElementById('dispBtn');
+const menuEleveBtn = document.getElementById('eleveBtn');
+const menuExportBtn = document.getElementById('expBtn');
+
+const menuDisp = document.getElementById('menuDisposition');
+const menuSaisie = document.getElementById('menuSaisie');
+const menuExport = document.getElementById('export');
+
+menuDispositionBtn.addEventListener('click', () => {
+  menuDisp.classList.remove('hidden')
+})
+
+menuEleveBtn.addEventListener('click', () => {
+  menuSaisie.classList.remove('hidden')
+})
+
+menuExportBtn.addEventListener('click', () => {
+  menuExport.classList.remove('hidden')
+})
+
 function render() {                        // rafraîchir l'écran
   renderGrid();
 }
@@ -166,6 +188,15 @@ document.addEventListener("DOMContentLoaded", function () {   // au démarrage
   nbPlace.value = "";
   planTotal.innerHTML = "";
 
+  //hover
+  planTotal.addEventListener('mouseenter', () =>{
+    planTotal.classList.toggle('bg-gray-200');
+  })
+
+  planTotal.addEventListener('mouseleave', () =>{
+    planTotal.classList.toggle('bg-gray-200');
+  })
+
   // Afficher l'aperçu : on change la taille de la salle
   document.getElementById("afficherAp").addEventListener("click", function () {
     const r = Number(nbRange.value);
@@ -185,6 +216,7 @@ document.addEventListener("DOMContentLoaded", function () {   // au démarrage
   // Appliquer au plan : on copie l'aperçu dans le plan principal
   document.getElementById("appPlanDisp").addEventListener("click", function () {
     planTotal.innerHTML = apercu.innerHTML;
+    menuDisp.classList.add('hidden');
   });
 
   // Appliquer au plan (saisie) : on lit les élèves et on tire les places
@@ -204,4 +236,5 @@ document.addEventListener("DOMContentLoaded", function () {   // au démarrage
   });
 
   render();
+  menuSaisie.classList.add('hidden');
 });
