@@ -52,7 +52,7 @@ function renderGrid() {                    // dessiner la salle
       // si la place est inutilisable, on la grise
       if (room.unavailable.includes(id)) {
         place.className = place.className + " bg-gray-300 text-gray-500";
-        place.textContent = "X";
+        place.textContent = "Indisponible";
       } else {
         // sinon on regarde si un élève est à cette place
         const nom = getNom(id);
@@ -97,8 +97,32 @@ function toggleSeat(id) {                  // marquer une place inutilisable
   render();
 }
 
+//fonction saisie individuelle
+
+
+function saisieInd() {
+  const nbEl = document.getElementById('nb-eleve').value;
+  const places = room.rows * room.cols - room.unavailable.length;
+  let str = "";
+  document.getElementById('errInd').textContent = "";
+  if (nbEl > places) {
+    document.getElementById('errInd').textContent = "Il y a " + nbEl + " élèves pour " + places + " places.";
+    return;
+  } else {
+    for (let i = 1; i <= nbEl; i++) {
+      let rep = prompt(`Donnez le nom de l'élève n°${i}`);
+      str += ` ${rep},`
+    }
+    document.querySelector("#SaisieMlt textarea").textContent = str.toString();
+  }
+}
+
+document.getElementById('startSaisie').addEventListener('click', () => {
+  saisieInd();
+})
+
 function parseStudents(texte) {            // couper la liste en noms
-  const lignes = texte.split("\n");
+  const lignes = texte.trim().split(",");
   const noms = [];
 
   for (let i = 0; i < lignes.length; i++) {
@@ -196,6 +220,8 @@ function reset() {                         // tout effacer
   save();
 }
 
+
+
 document.addEventListener("DOMContentLoaded", function () {   // au démarrage
   const nbRange = document.getElementById("nb-range");
   const nbPlace = document.getElementById("nb-place");
@@ -206,10 +232,17 @@ document.addEventListener("DOMContentLoaded", function () {   // au démarrage
   const errMlt = document.getElementById("errMlt");
 
   // au démarrage on part de zéro : champs vides, plan vide
-  reset();
-  nbRange.value = "";
-  nbPlace.value = "";
-  planTotal.innerHTML = "";
+  
+  
+
+  //bouton reset
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    reset();
+    nbRange.value = "";
+    nbPlace.value = "";
+    planTotal.innerHTML = "";
+    apercu.innerHTML = "";
+  });
 
   // les 3 boutons du header ouvrent et ferment leur menu
   document.getElementById("dispBtn").addEventListener("click", function () {
@@ -265,3 +298,4 @@ document.addEventListener("DOMContentLoaded", function () {   // au démarrage
 
   render();
 });
+
