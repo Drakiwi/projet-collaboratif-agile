@@ -10,6 +10,7 @@
 // Ce qu'il reste à faire :
 // 1. le bouton Exporter
 // 2. un message d'erreur si on a plus d'élèves que de places
+// 3. saisie d'éleves
 
 let room = { rows: 0, cols: 0, unavailable: [] };
 let students = [];
@@ -136,6 +137,40 @@ function drawPlan() {                      // mélanger et placer les élèves
   render();
 }
 
+function basculerMenu(menu) {              // ouvrir ou fermer un menu
+  if (!menu) return;
+
+  // on regarde s'il est déjà ouvert
+  const estOuvert = !menu.classList.contains("hidden");
+
+  fermerMenus();
+
+  // s'il était ouvert, on le laisse fermé, sinon on l'ouvre
+  if (!estOuvert) {
+    menu.classList.remove("hidden");
+  }
+}
+
+function fermerMenus() {                  // fermer les 3 menus
+  document.getElementById("menuDisposition").classList.add("hidden");
+  document.getElementById("menuSaisie").classList.add("hidden");
+  document.getElementById("export").classList.add("hidden");
+}
+
+function appliquerAuPlan() {               // copier l'aperçu dans le plan
+  const apercu = document.getElementById("apercu");
+  const planTotal = document.getElementById("planTotal");
+  if (!apercu || !planTotal) return;
+
+  // une boîte verticale : chaque rangée passe à la ligne
+  const colonne = document.createElement("div");
+  colonne.className = "flex flex-col items-center gap-2 shrink-0";
+  colonne.innerHTML = apercu.innerHTML;
+
+  planTotal.innerHTML = "";
+  planTotal.appendChild(colonne);
+}
+
 function save() {                          // garder les données
   localStorage.setItem(
     "attribue-ta-place",
@@ -166,6 +201,19 @@ document.addEventListener("DOMContentLoaded", function () {   // au démarrage
   nbPlace.value = "";
   planTotal.innerHTML = "";
 
+  // les 3 boutons du header ouvrent et ferment leur menu
+  document.getElementById("dispBtn").addEventListener("click", function () {
+    basculerMenu(document.getElementById("menuDisposition"));
+  });
+
+  document.getElementById("eleveBtn").addEventListener("click", function () {
+    basculerMenu(document.getElementById("menuSaisie"));
+  });
+
+  document.getElementById("expBtn").addEventListener("click", function () {
+    basculerMenu(document.getElementById("export"));
+  });
+
   // Afficher l'aperçu : on change la taille de la salle
   document.getElementById("afficherAp").addEventListener("click", function () {
     const r = Number(nbRange.value);
@@ -184,7 +232,7 @@ document.addEventListener("DOMContentLoaded", function () {   // au démarrage
 
   // Appliquer au plan : on copie l'aperçu dans le plan principal
   document.getElementById("appPlanDisp").addEventListener("click", function () {
-    planTotal.innerHTML = apercu.innerHTML;
+    appliquerAuPlan();
   });
 
   // Appliquer au plan (saisie) : on lit les élèves et on tire les places
@@ -200,7 +248,7 @@ document.addEventListener("DOMContentLoaded", function () {   // au démarrage
     errMlt.textContent = "";
 
     drawPlan();
-    planTotal.innerHTML = apercu.innerHTML;
+    appliquerAuPlan();
   });
 
   render();
