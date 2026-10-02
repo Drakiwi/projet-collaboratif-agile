@@ -73,7 +73,9 @@ body footer[class]{
 /* ---------- plan principal ---------- */
 #planTotal{
   width:100%;
-  height:100%;
+  height:auto;
+  align-self:stretch;
+  flex:1 1 auto;
   min-height:10rem;
   padding:.75rem;
   overflow:auto;
@@ -93,6 +95,8 @@ body footer[class]{
 .pca-plan-holder{ position:relative; margin:auto; flex:0 0 auto; }
 .pca-plan-colonne{
   position:absolute; top:0; left:0;
+  width:max-content;
+  max-width:none;
   transform-origin:top left;
   display:flex; flex-direction:column; align-items:center;
   gap:.5rem;
@@ -153,7 +157,11 @@ body footer[class]{
 @media (min-width:860px){
   #menuDisposition{
     grid-template-columns:minmax(15rem,21rem) minmax(0,1fr);
-    grid-template-areas:"titre titre" "form apercu" "actions actions";
+    grid-template-areas:
+      "titre        titre"
+      "form         apercu-titre"
+      "form         apercu"
+      "actions      actions";
     align-items:start;
   }
   #menuSaisie{
@@ -309,6 +317,13 @@ function el(id) {
   return document.getElementById(id);
 }
 
+// attache un écouteur si l'élément existe (index.html peut varier selon la branche)
+function on(id, evt, fn) {
+  const e = el(id);
+  if (e) e.addEventListener(evt, fn);
+  return e;
+}
+
 function dateCourante() {
   return new Date().toLocaleString("fr-FR", {
     day: "2-digit",
@@ -356,34 +371,36 @@ function preparerStructure() {
     fermerMenus();
   });
 
-  // zone de message dans la fenêtre d'export
+  // zone de message + boutons rapides dans la fenêtre d'export
   const exportMenu = el("export");
-  const statut = document.createElement("p");
-  statut.id = "pca-export-statut";
-  statut.setAttribute("role", "status");
-  statut.setAttribute("aria-live", "polite");
-  exportMenu.appendChild(statut);
+  if (exportMenu) {
+    const statut = document.createElement("p");
+    statut.id = "pca-export-statut";
+    statut.setAttribute("role", "status");
+    statut.setAttribute("aria-live", "polite");
+    exportMenu.appendChild(statut);
 
-  // deux boutons d'export clairs, en plus du bouton déjà présent
-  const actions = document.createElement("div");
-  actions.id = "pca-export-actions";
-  actions.className = "flex flex-row flex-wrap gap-2 justify-center";
+    // deux boutons d'export clairs, en plus du bouton déjà présent
+    const actions = document.createElement("div");
+    actions.id = "pca-export-actions";
+    actions.className = "flex flex-row flex-wrap gap-2 justify-center";
 
-  const btnTexte = document.createElement("button");
-  btnTexte.id = "pca-export-texte";
-  btnTexte.type = "button";
-  btnTexte.textContent = "Copier le plan en texte";
-  btnTexte.addEventListener("click", function () { exporter("texte"); });
+    const btnTexte = document.createElement("button");
+    btnTexte.id = "pca-export-texte";
+    btnTexte.type = "button";
+    btnTexte.textContent = "Copier le plan en texte";
+    btnTexte.addEventListener("click", function () { exporter("texte"); });
 
-  const btnImage = document.createElement("button");
-  btnImage.id = "pca-export-image";
-  btnImage.type = "button";
-  btnImage.textContent = "Copier une capture d'écran";
-  btnImage.addEventListener("click", function () { exporter("sS"); });
+    const btnImage = document.createElement("button");
+    btnImage.id = "pca-export-image";
+    btnImage.type = "button";
+    btnImage.textContent = "Copier une capture d'écran";
+    btnImage.addEventListener("click", function () { exporter("sS"); });
 
-  actions.appendChild(btnTexte);
-  actions.appendChild(btnImage);
-  exportMenu.insertBefore(actions, statut);
+    actions.appendChild(btnTexte);
+    actions.appendChild(btnImage);
+    exportMenu.insertBefore(actions, statut);
+  }
 
   // libellés utiles pour la mise en page en grille
   const formDispo = document.querySelector("#menuDisposition > div");
@@ -405,7 +422,9 @@ function preparerStructure() {
     if (!m) return;
     m.setAttribute("role", "dialog");
     m.setAttribute("aria-modal", "true");
-    m.classList.remove("invisible"); // la visibilité est gérée par la classe .pca-ouvert
+    // la visibilité est ensuite gérée par la seule classe .pca-ouvert
+    m.classList.remove("invisible");
+    m.classList.remove("hidden");
   });
 }
 
@@ -535,6 +554,8 @@ function saisieInd() {
   const champNb = el("nb-eleve");
   const errInd = el("errInd");
   const zone = document.querySelector("#SaisieMlt textarea");
+  if (!champNb || !errInd || !zone) return;
+
   const nbEl = parseInt(champNb.value, 10);
 
   if (isNaN(nbEl) || nbEl < 1) {
@@ -693,14 +714,14 @@ function ajusterPlan() {
   const h = colonne.offsetHeight;
   if (!w || !h || dispoW <= 0 || dispoH <= 0) return;
 
-  const k = Math.min(dispoW / w, dispoH / h, 1.5);
-  if (k < 1) {
-    colonne.style.transform = "scale(" + k.toFixed(3) + ")";
-  } else {
-    colonne.style.transform = "";
-  }
+  // on rétrécit pour que tout tienne, et on agrandit un peu sur grand écran
+  const k = Math.min(dispoW / w, dispoH / h, 1.8);
+  colonne.style.transform = k === 1 ? "" : "scale(" + k.toFixed(3) + ")";
+
+  // le conteneur prend exactement la taille affichée, pour que le centrage
+  // et les barres de défilement restent corrects
   holder.style.width = (w * k).toFixed(0) + "px";
-  holder.style.height = (h * Math.min(k, 1)).toFixed(0) + "px";
+  holder.style.height = (h * k).toFixed(0) + "px";
 }
 
 /* =======================================================================
@@ -711,14 +732,14 @@ function textePlan() {
   const lignes = [];
   const dispo = room.rows * room.cols - room.unavailable.length;
 
-  lignes.push("PLAN DE CLASSE - " + room.rows + " rangee(s) x " + room.cols + " place(s)");
-  lignes.push("Genere le " + dateCourante());
+  lignes.push("PLAN DE CLASSE — " + room.rows + " rangée(s) × " + room.cols + " place(s)");
+  lignes.push("Généré le " + dateCourante());
   lignes.push("");
   lignes.push("[ Bureau formateur ]");
   lignes.push("");
 
   for (let r = 1; r <= room.rows; r++) {
-    lignes.push("Rangee " + r);
+    lignes.push("Rangée " + r);
     for (let c = 1; c <= room.cols; c++) {
       const id = "R" + r + "-C" + c;
       const nom = getNom(id);
@@ -732,13 +753,13 @@ function textePlan() {
   }
 
   lignes.push("-------------------------------");
-  lignes.push("Eleves places : " + plan.length + " / " + students.length);
+  lignes.push("Élèves placés : " + plan.length + " / " + students.length);
   lignes.push("Places utilisables : " + dispo);
   if (room.unavailable.length) {
     lignes.push("Indisponibles : " + room.unavailable.join(", "));
   }
   lignes.push("");
-  lignes.push("Application « Attribue ta place » - projet collaboratif agile");
+  lignes.push("Application « Attribue ta place » — projet collaboratif agile");
 
   return lignes.join("\n");
 }
@@ -835,12 +856,12 @@ function dessinerPlan() {
   ctx.fillStyle = "#4b5563";
   ctx.font = "18px sans-serif";
   ctx.fillText(
-    room.rows + " rangee(s) x " + room.cols + " place(s) - " + plan.length + " eleve(s) place(s)",
+    room.rows + " rangée(s) × " + room.cols + " place(s) — " + plan.length + " élève(s) placé(s)",
     W / 2, marg + 62
   );
   ctx.fillStyle = "#6b7280";
   ctx.font = "15px sans-serif";
-  ctx.fillText("Genere le " + dateCourante(), W / 2, marg + 88);
+  ctx.fillText("Généré le " + dateCourante(), W / 2, marg + 88);
 
   // bureau
   const bx = (W - gridW) / 2, by = marg + titreH;
@@ -899,7 +920,7 @@ function dessinerPlan() {
 
   // légende
   const items = [
-    ["#ddd6fe", "#6d28d9", "eleve place"],
+    ["#ddd6fe", "#6d28d9", "élève placé"],
     ["#d1d5db", "#111827", "indisponible"],
     ["#ffffff", "#111827", "libre"],
   ];
@@ -960,16 +981,27 @@ function telecharger(blob, nom) {
   setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
 }
 
+// Le presse-papier peut rester en attente (invite de permission) : on ne
+// bloque jamais l'interface plus de 2,5 s, on passe à la méthode de secours.
+function avecDelai(promesse, ms) {
+  return Promise.race([
+    promesse,
+    new Promise(function (resoudre) {
+      setTimeout(function () { resoudre("delai-depasse"); }, ms);
+    }),
+  ]);
+}
+
 async function copierTexte(txt) {
   // méthode moderne (HTTPS / localhost)
   try {
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      await navigator.clipboard.writeText(txt);
-      return true;
+      const res = await avecDelai(navigator.clipboard.writeText(txt), 2500);
+      if (res !== "delai-depasse") return true;
     }
   } catch (e) { /* on tente la méthode de secours */ }
 
-  // méthode de secours : opened in file:// ou navigateur ancien
+  // méthode de secours : page ouverte en file:// ou navigateur ancien
   try {
     const zone = document.createElement("textarea");
     zone.value = txt;
@@ -994,8 +1026,9 @@ async function copierImage(canvas) {
 
   try {
     if (navigator.clipboard && navigator.clipboard.write && typeof ClipboardItem !== "undefined") {
-      await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
-      return true;
+      const item = new ClipboardItem({ "image/png": blob });
+      const res = await avecDelai(navigator.clipboard.write([item]), 2500);
+      if (res !== "delai-depasse") return true;
     }
   } catch (e) { /* image refusée : on propose le téléchargement */ }
 
@@ -1078,25 +1111,25 @@ document.addEventListener("DOMContentLoaded", function () {
   const errMlt = el("errMlt");
   const zone = document.querySelector("#SaisieMlt textarea");
 
-  // bouton reset
-  el("resetBtn").addEventListener("click", function () {
+  // bouton reset (présent seulement sur certaines versions de index.html)
+  on("resetBtn", "click", function () {
     reset();
-    nbRange.value = "";
-    nbPlace.value = "";
-    el("nb-eleve").value = "";
-    errNb.textContent = "";
-    errMlt.textContent = "";
+    if (nbRange) nbRange.value = "";
+    if (nbPlace) nbPlace.value = "";
+    if (el("nb-eleve")) el("nb-eleve").value = "";
+    if (errNb) errNb.textContent = "";
+    if (errMlt) errMlt.textContent = "";
     if (zone) zone.value = "";
-    el("planTotal").innerHTML = "";
-    el("apercu").innerHTML = "";
+    if (el("planTotal")) el("planTotal").innerHTML = "";
+    if (el("apercu")) el("apercu").innerHTML = "";
     fermerMenus();
     afficherToast("Tout a été réinitialisé.");
   });
 
   // les 3 boutons du header ouvrent et ferment leur menu
-  el("dispBtn").addEventListener("click", function () { basculerMenu("menuDisposition"); });
-  el("eleveBtn").addEventListener("click", function () { basculerMenu("menuSaisie"); });
-  el("expBtn").addEventListener("click", function () { basculerMenu("export"); });
+  on("dispBtn", "click", function () { basculerMenu("menuDisposition"); });
+  on("eleveBtn", "click", function () { basculerMenu("menuSaisie"); });
+  on("expBtn", "click", function () { basculerMenu("export"); });
 
   // touche Échap pour fermer
   document.addEventListener("keydown", function (e) {
@@ -1104,18 +1137,18 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // saisie individuelle
-  el("startSaisie").addEventListener("click", function () { saisieInd(); });
+  on("startSaisie", "click", function () { saisieInd(); });
 
   // Afficher l'aperçu : on change la taille de la salle
-  el("afficherAp").addEventListener("click", function () {
+  on("afficherAp", "click", function () {
     const r = parseInt(nbRange.value, 10);
     const c = parseInt(nbPlace.value, 10);
 
     if (isNaN(r) || isNaN(c) || r < 1 || c < 1) {
-      errNb.textContent = "Il faut au moins 1 rangée et 1 place.";
+      if (errNb) errNb.textContent = "Il faut au moins 1 rangée et 1 place.";
       return;
     }
-    errNb.textContent = "";
+    if (errNb) errNb.textContent = "";
 
     room.rows = r;
     room.cols = c;
@@ -1123,27 +1156,27 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Appliquer au plan : on copie l'aperçu dans le plan principal
-  el("appPlanDisp").addEventListener("click", function () {
+  on("appPlanDisp", "click", function () {
     appliquerAuPlan();
     fermerMenus();
     afficherToast("Disposition appliquée au plan.");
   });
 
   // Appliquer au plan (saisie) : on lit les élèves et on tire les places
-  el("appPlanSaisie").addEventListener("click", function () {
+  on("appPlanSaisie", "click", function () {
     if (room.rows === 0 || room.cols === 0) {
-      errMlt.textContent = "Définissez d'abord la disposition de la salle.";
+      if (errMlt) errMlt.textContent = "Définissez d'abord la disposition de la salle.";
       return;
     }
 
-    students = parseStudents(zone.value);
+    students = parseStudents(zone ? zone.value : "");
 
     const places = room.rows * room.cols - room.unavailable.length;
     if (students.length > places) {
-      errMlt.textContent = "Il y a " + students.length + " élèves pour " + places + " places.";
+      if (errMlt) errMlt.textContent = "Il y a " + students.length + " élèves pour " + places + " places.";
       return;
     }
-    errMlt.textContent = "";
+    if (errMlt) errMlt.textContent = "";
 
     drawPlan();
     appliquerAuPlan();
@@ -1152,8 +1185,9 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // bouton Exporter (le select choisit texte ou capture)
-  el("exportBtn").addEventListener("click", function () {
-    exporter(el("format").value);
+  on("exportBtn", "click", function () {
+    const sel = el("format");
+    exporter(sel ? sel.value : "texte");
   });
 
   // le plan et l'aperçu se réajustent à chaque changement de taille d'écran
